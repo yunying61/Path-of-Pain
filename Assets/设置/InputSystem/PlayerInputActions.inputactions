@@ -40,6 +40,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Dash",
+                    "type": "Button",
+                    "id": "4e097049-34f7-4912-94ff-7dac37edf175",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SDash",
+                    "type": "Button",
+                    "id": "f98b87fd-78e6-44c9-8f2f-b4cfd9639c7d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -277,7 +295,7 @@
                 {
                     "name": "",
                     "id": "986e7896-c96f-4ceb-b52c-35b36d2ca1ea",
-                    "path": "<Keyboard>/k",
+                    "path": "<Keyboard>/i",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
@@ -288,7 +306,7 @@
                 {
                     "name": "",
                     "id": "81667a3e-8252-4918-8d7a-856ab918bfbb",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": "XboxGamePad",
@@ -310,7 +328,7 @@
                 {
                     "name": "",
                     "id": "651fc23f-5b2b-4bb5-a2fc-9791eee48ce0",
-                    "path": "<Gamepad>/buttonWest",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "XboxGamePad",
@@ -326,6 +344,50 @@
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "Test",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5de755bc-975a-46dc-aef6-52de8e2d9be6",
+                    "path": "<Keyboard>/o",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9a60c0c9-7d8a-4bb8-9ddd-35b067f9cedd",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XboxGamePad",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "af8d7a01-1d7f-4b6a-bf66-4b1d4413591a",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "SDash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9496935e-01db-4ed5-8c1a-e3df2318d831",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XboxGamePad",
+                    "action": "SDash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

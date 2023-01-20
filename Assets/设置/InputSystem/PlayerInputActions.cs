@@ -62,6 +62,24 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dash"",
+                    ""type"": ""Button"",
+                    ""id"": ""4e097049-34f7-4912-94ff-7dac37edf175"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SDash"",
+                    ""type"": ""Button"",
+                    ""id"": ""f98b87fd-78e6-44c9-8f2f-b4cfd9639c7d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -299,7 +317,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""986e7896-c96f-4ceb-b52c-35b36d2ca1ea"",
-                    ""path"": ""<Keyboard>/k"",
+                    ""path"": ""<Keyboard>/i"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
@@ -310,7 +328,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""81667a3e-8252-4918-8d7a-856ab918bfbb"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XboxGamePad"",
@@ -332,7 +350,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""651fc23f-5b2b-4bb5-a2fc-9791eee48ce0"",
-                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XboxGamePad"",
@@ -348,6 +366,50 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
                     ""action"": ""Test"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5de755bc-975a-46dc-aef6-52de8e2d9be6"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9a60c0c9-7d8a-4bb8-9ddd-35b067f9cedd"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XboxGamePad"",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""af8d7a01-1d7f-4b6a-bf66-4b1d4413591a"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""SDash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9496935e-01db-4ed5-8c1a-e3df2318d831"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XboxGamePad"",
+                    ""action"": ""SDash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -672,6 +734,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_GamePlay_Jump = m_GamePlay.FindAction("Jump", throwIfNotFound: true);
         m_GamePlay_Attack = m_GamePlay.FindAction("Attack", throwIfNotFound: true);
         m_GamePlay_Test = m_GamePlay.FindAction("Test", throwIfNotFound: true);
+        m_GamePlay_Dash = m_GamePlay.FindAction("Dash", throwIfNotFound: true);
+        m_GamePlay_SDash = m_GamePlay.FindAction("SDash", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -740,6 +804,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Jump;
     private readonly InputAction m_GamePlay_Attack;
     private readonly InputAction m_GamePlay_Test;
+    private readonly InputAction m_GamePlay_Dash;
+    private readonly InputAction m_GamePlay_SDash;
     public struct GamePlayActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -748,6 +814,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_GamePlay_Jump;
         public InputAction @Attack => m_Wrapper.m_GamePlay_Attack;
         public InputAction @Test => m_Wrapper.m_GamePlay_Test;
+        public InputAction @Dash => m_Wrapper.m_GamePlay_Dash;
+        public InputAction @SDash => m_Wrapper.m_GamePlay_SDash;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -769,6 +837,12 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @Test.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnTest;
                 @Test.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnTest;
                 @Test.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnTest;
+                @Dash.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnDash;
+                @Dash.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnDash;
+                @Dash.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnDash;
+                @SDash.started -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnSDash;
+                @SDash.performed -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnSDash;
+                @SDash.canceled -= m_Wrapper.m_GamePlayActionsCallbackInterface.OnSDash;
             }
             m_Wrapper.m_GamePlayActionsCallbackInterface = instance;
             if (instance != null)
@@ -785,6 +859,12 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @Test.started += instance.OnTest;
                 @Test.performed += instance.OnTest;
                 @Test.canceled += instance.OnTest;
+                @Dash.started += instance.OnDash;
+                @Dash.performed += instance.OnDash;
+                @Dash.canceled += instance.OnDash;
+                @SDash.started += instance.OnSDash;
+                @SDash.performed += instance.OnSDash;
+                @SDash.canceled += instance.OnSDash;
             }
         }
     }
@@ -862,6 +942,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
         void OnTest(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
+        void OnSDash(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

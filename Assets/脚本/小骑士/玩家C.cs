@@ -3,234 +3,344 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
-namespace QFramework
+public class 玩家C : MonoBehaviour
 {
-    public class 玩家C : MonoBehaviour
+    #region 属性
+    private PlayerInputActions 玩家输入控制器;
+    private Rigidbody2D 玩家刚体;
+    private BoxCollider2D 碰撞体_玩家脚部;
+    private Animator 玩家动画;
+    [SerializeField] private 能力特效C 能力特效控制器;
+    [SerializeField] private 玩家作用特效下C 玩家作用特效下控制器;
+
+    [Header("游戏参数")]
+    private Vector2 玩家位移向量;
+    [SerializeField] private float 玩家移动速度;
+    [SerializeField] private float 最大垂直速度 = 16.0f;
+    [SerializeField] private float 跳跃力度;
+    [SerializeField] private float 蹬墙跳水平力度;
+    [SerializeField] private float 蹬墙跳垂直力度;
+    [SerializeField] private float 二段跳力度;
+    [SerializeField] private float 地面重力比例 = 1.0f;
+    [SerializeField] private float 跳跃重力比例 = 0.8f;
+    [SerializeField] private float 下落重力比例 = 1.2f;
+    [SerializeField] private float 冲刺时间;
+    private float 冲刺_当前时间;
+    [SerializeField] private float 冲刺冷却时间;
+    private float 冲刺_当前冷却时间;
+    [SerializeField] private float 冲刺速度;
+    [SerializeField] private float 扒墙下滑速度;
+
+    [Header("布尔参数")]
+    public bool 判断_可以移动 = true;
+    public bool 判断_可以跳跃 = true;
+    public bool 判断_可以冲刺 = true;
+    public bool 判断_可以扒墙下滑 = true;
+    public bool 判断_玩家朝向左 = true;
+    public bool 重力开关 = true;
+    public bool 判断_地面检测;        // 是否接触地面
+    public bool 判断_下落检测;
+    public bool 判断_贴墙中 = false;
+    [HideInInspector] public bool 判断_冲刺中 = false;
+    [HideInInspector] public bool 判断_蹬墙跳中 = false;
+    private bool 移动_发生过 = true;
+    private bool 判断_跳跃中;
+    private bool 判断_已经二段跳;
+    private bool 冲刺输入开关 = true;
+    private bool 冲刺限制开关 = false;
+    private bool 判断_扒墙中 = false;
+
+    [Header("动画参数")]
+    private int 动画参数_在地面上;
+    private int 动画参数_下落中;
+    private int 动画参数_扒墙中;
+    private int 动画参数_移动速度;
+    private int 动画参数_朝向转换;
+    private int 动画参数_跳跃;
+    private int 动画参数_二段跳;
+    private int 动画参数_冲刺;
+
+    #endregion
+
+    private void Awake()
     {
-        #region 属性
-        PlayerInputActions 玩家控制器;
-        Rigidbody2D 玩家刚体;
-        BoxCollider2D 碰撞体_玩家脚部;
-        Animator 玩家动画;
+        玩家输入控制器 = new PlayerInputActions();
+        玩家输入控制器.GamePlay.Move.performed += ctx => 玩家位移向量 = ctx.ReadValue<Vector2>();       // 读取 位移向量
+        玩家输入控制器.GamePlay.Move.canceled += ctx => 玩家位移向量 = Vector2.zero;                    // 在不动左摇杆的时候，不发生位移
 
-        [Header("移动参数")]
-        Vector2 玩家位移向量;
-        [SerializeField]float 玩家移动速度;
-        [SerializeField] float 最大垂直速度 = 10.0f;
-        [SerializeField] float 跳跃力度;
-        [SerializeField] float 二段跳力度;
-        [SerializeField] float 地面重力比例=1.0f;
-        [SerializeField] float 跳跃重力比例=0.0f;
-        [SerializeField] float 下落重力比例=0.0f;
+        玩家输入控制器.GamePlay.Jump.started += 跳跃_按下;
+        //玩家输入控制器.GamePlay.Jump.performed += 跳跃_已执行;
+        玩家输入控制器.GamePlay.Jump.canceled += 跳跃_松开;
 
-        bool 重力开关=true;
-        private bool 判断_地面检测;        // 是否接触地面
-        private bool 判断_玩家移动;
-        private bool 判断_玩家朝向左;
-        private bool 判断_可以跳跃;
-        private bool 判断_跳跃中;
-        private bool 判断_已经二段跳;
-        private bool 判断_下落检测;
-        private bool 冲刺输入开关;
+        玩家输入控制器.GamePlay.Dash.started += 冲刺_按下;
+    }
 
-        [Header("动画参数")]
-        private int 动画参数_在地面上;
-        private int 动画参数_移动中;
-        private int 动画参数_移动量;
-        private int 动画参数_朝向转换;
-        private int 动画参数_跳跃;
-        private int 动画参数_二段跳;
-        private int 动画参数_下落中;
+    private void OnEnable()
+    {
+        玩家输入控制器.GamePlay.Enable();
+    }
+    private void OnDisable()
+    {
+        玩家输入控制器.GamePlay.Disable();
+    }
 
-        #endregion
+    // Start is called before the first frame update
+    private void Start()
+    {
+        玩家刚体 = GetComponent<Rigidbody2D>();
+        碰撞体_玩家脚部 = GetComponent<BoxCollider2D>();
+        玩家动画 = GetComponent<Animator>();
 
-        void Awake()
+        动画参数_在地面上 = Animator.StringToHash("判断_在地面上");
+        动画参数_扒墙中 = Animator.StringToHash("判断_扒墙中");
+        动画参数_移动速度 = Animator.StringToHash("移动速度");
+        动画参数_朝向转换 = Animator.StringToHash("朝向转换");
+        动画参数_跳跃 = Animator.StringToHash("跳跃");
+        动画参数_二段跳 = Animator.StringToHash("二段跳");
+        动画参数_下落中 = Animator.StringToHash("判断_下落中");
+        动画参数_冲刺 = Animator.StringToHash("冲刺");
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+        地面接触检测();
+        下落检测();
+        玩家转向();
+        玩家冲刺限制();
+    }
+
+    private void FixedUpdate()
+    {
+        玩家移动();
+        改变玩家重力();
+        扒墙状态控制();
+    }
+
+    private void 改变玩家重力()
+    {
+        var gravityScale = 地面重力比例;
+
+        if (!判断_地面检测)
         {
-            玩家控制器 = new PlayerInputActions();
-            玩家控制器.GamePlay.Move.performed += ctx => 玩家位移向量 = ctx.ReadValue<Vector2>();       // 读取 位移向量
-            玩家控制器.GamePlay.Move.canceled += ctx => 玩家位移向量 = Vector2.zero;                    // 在不动左摇杆的时候，不发生位移
-
-            // 玩家控制器.GamePlay.Jump.started += ctx => 玩家跳跃();
-            玩家控制器.GamePlay.Jump.started += 跳跃_按下;
-            玩家控制器.GamePlay.Jump.performed+= 跳跃_已执行;
-            玩家控制器.GamePlay.Jump.canceled+= 跳跃_松开;
+            gravityScale = 玩家刚体.velocity.y > 0.0f ? 跳跃重力比例 : 下落重力比例;
         }
 
-        private void OnEnable()
+        if (!重力开关)
         {
-            玩家控制器.GamePlay.Enable();
-        }
-        private void OnDisable()
-        {
-            玩家控制器.GamePlay.Disable();
+            gravityScale = 0;
         }
 
-        // Start is called before the first frame update
-        void Start()
-        {
-            玩家刚体 = GetComponent<Rigidbody2D>();
-            碰撞体_玩家脚部=GetComponent<BoxCollider2D>();
-            玩家动画=GetComponent<Animator>();
+        玩家刚体.gravityScale = gravityScale;
+    }
 
-            动画参数_在地面上 = Animator.StringToHash("判断_在地面上");
-            动画参数_移动中 = Animator.StringToHash("判断_移动中");
-            动画参数_移动量 = Animator.StringToHash("移动量");
-            动画参数_朝向转换 = Animator.StringToHash("朝向转换");
-            动画参数_跳跃 = Animator.StringToHash("跳跃");
-            动画参数_二段跳 = Animator.StringToHash("二段跳");
-            动画参数_下落中 = Animator.StringToHash("判断_下落中");
+    #region  移动、跳跃方法
+    private void 玩家移动()
+    {
+        Vector2 玩家速度 = 玩家刚体.velocity;
+        if (玩家位移向量.x != 0)
+        {
+            玩家速度.y = Mathf.Clamp(玩家速度.y, -最大垂直速度 / 2, 最大垂直速度 / 2);
+        }
+        else
+        {
+            玩家速度.y = Mathf.Clamp(玩家速度.y, -最大垂直速度, 最大垂直速度);
         }
 
-        // Update is called once per frame
-        void Update()
+        if (!判断_冲刺中 && 判断_可以移动)
         {
-            地面接触检测();
-            下落检测();
-            玩家移动();
-            玩家转向();
-            玩家跳跃();
-            改变玩家重力();
-
-        }
-
-        void FixedUpdate()
-        {
-            
-        }
-
-        void 改变玩家重力()
-        {
-            var gravityScale = 地面重力比例;
- 
-            if (!判断_地面检测)
+            //玩家刚体.velocity = new Vector2(玩家位移向量.x * 玩家移动速度, 玩家速度.y);
+            #region  移动赋值分离
+            if (玩家位移向量.x != 0)
             {
-                gravityScale = 玩家刚体.velocity.y > 0.0f ? 跳跃重力比例 : 下落重力比例;
+                玩家刚体.velocity = new Vector2(玩家位移向量.x * 玩家移动速度, 玩家速度.y);
+                移动_发生过 = true;
             }
-    
-            if (!重力开关)
+            else if (玩家位移向量.x == 0 && 移动_发生过)
             {
-                gravityScale = 0;
+                玩家刚体.velocity = new Vector2(0.0f, 玩家速度.y);
+                移动_发生过 = false;
             }
-    
-            玩家刚体.gravityScale = gravityScale;
+            #endregion
+
+            玩家动画.SetInteger(动画参数_移动速度, (int)玩家刚体.velocity.x);// 阶梯速度
         }
+    }
 
-        #region  移动、跳跃方法
-        void 玩家移动()
+    private void 玩家转向()
+    {
+        if (玩家刚体.velocity.x > Mathf.Epsilon && 判断_玩家朝向左)    // 向右移动
         {
-            判断_玩家移动 = Mathf.Abs(玩家刚体.velocity.x) > Mathf.Epsilon;
-
-            Vector2 玩家速度=玩家刚体.velocity;
-            if(玩家位移向量.x != 0){
-                玩家速度.y = Mathf.Clamp(玩家速度.y,-最大垂直速度/2,最大垂直速度/2);
-            }
-            else{
-                玩家速度.y = Mathf.Clamp(玩家速度.y,-最大垂直速度,最大垂直速度);
-            }
-            
-            玩家刚体.velocity = new Vector2(玩家位移向量.x * 玩家移动速度, 玩家速度.y);
-            玩家动画.SetInteger(动画参数_移动量, (int)玩家刚体.velocity.x);
+            判断_玩家朝向左 = false;
+            transform.localRotation = Quaternion.Euler(0, 180, 0);
+            if (判断_地面检测) { 玩家动画.SetTrigger(动画参数_朝向转换); }
         }
-
-        void 玩家转向()
+        else if (玩家刚体.velocity.x < -Mathf.Epsilon && !判断_玩家朝向左)     // 向左移动
         {
-            if (玩家位移向量.x > Mathf.Epsilon && 判断_玩家朝向左)    // 向右移动
-            {
-                判断_玩家朝向左 = false;
-                transform.localRotation = Quaternion.Euler(0, 180, 0);
-                if (判断_地面检测) { 玩家动画.SetTrigger(动画参数_朝向转换); }
-            }
-            else if (玩家位移向量.x < -Mathf.Epsilon && !判断_玩家朝向左)     // 向左移动
-            {
-                判断_玩家朝向左 = true;
-                transform.localRotation = Quaternion.Euler(0, 0, 0);
-                if (判断_地面检测) { 玩家动画.SetTrigger(动画参数_朝向转换); }
-            }
+            判断_玩家朝向左 = true;
+            transform.localRotation = Quaternion.Euler(0, 0, 0);
+            if (判断_地面检测) { 玩家动画.SetTrigger(动画参数_朝向转换); }
         }
+    }
 
-        void 玩家跳跃()
+    private void 跳跃_按下(InputAction.CallbackContext context)
+    {
+        if (判断_可以跳跃)
         {
-            if (判断_地面检测) // && (判断_跳跃中 || 判断_已经二段跳), 如果已经落地了，则重置跳跃计数器
+            if (判断_地面检测)
             {
-                // 跳跃计数=0;
-                判断_跳跃中 = false;
-                判断_已经二段跳 = false;
-            }
-        }
-
-        private void 跳跃_按下(InputAction.CallbackContext context)
-        {
-            if(判断_地面检测)
-            {
-                玩家刚体.velocity = new Vector2(0, 跳跃力度);
-                // 玩家刚体.AddForce(new Vector2(0, 跳跃力度), ForceMode2D.Impulse);
+                玩家刚体.velocity = new Vector2(玩家刚体.velocity.x, 跳跃力度);
+                //玩家刚体.AddForce(new Vector2(0, 跳跃力度), ForceMode2D.Impulse);
                 玩家动画.SetTrigger(动画参数_跳跃);
                 判断_跳跃中 = true;
             }
-            else if ((判断_跳跃中 || 玩家刚体.velocity.y != 0) && !判断_已经二段跳)
+            else if (判断_扒墙中)
             {
-                玩家刚体.velocity = new Vector2(0, 二段跳力度);
-                // 玩家刚体.AddForce(new Vector2(0, 二段跳力度), ForceMode2D.Impulse);
+                判断_扒墙中 = false;
+                判断_可以移动 = false;
+                判断_蹬墙跳中 = true;
+                玩家刚体.velocity = 判断_玩家朝向左 ? new Vector2(蹬墙跳水平力度, 蹬墙跳垂直力度) : new Vector2(-蹬墙跳水平力度, 蹬墙跳垂直力度);
+                玩家动画.SetTrigger(动画参数_跳跃);
+                StartCoroutine(协程_蹬墙跳向上力());
+                玩家作用特效下控制器.激活能力特效(1);
+            }
+            else if ((判断_跳跃中 || !判断_地面检测) && !判断_已经二段跳)
+            {
+                玩家刚体.velocity = new Vector2(玩家刚体.velocity.x, 二段跳力度);
                 玩家动画.SetTrigger(动画参数_二段跳);
+                能力特效控制器.激活能力特效(1);
+                判断_跳跃中 = true;
                 判断_已经二段跳 = true;
             }
         }
+    }
 
-        private void 跳跃_已执行(InputAction.CallbackContext context)
+    private IEnumerator 协程_蹬墙跳向上力()
+    {
+        yield return new WaitForSeconds(0.2f);
+        判断_可以移动 = true;
+        yield return new WaitForSeconds(0.1f);
+        玩家刚体.velocity = new Vector2(0f, 蹬墙跳垂直力度 - 1f);
+    }
+
+    //private void 跳跃_已执行(InputAction.CallbackContext context)
+    //{
+    //    // JumpCancel();
+    //}
+
+    private void 跳跃_松开(InputAction.CallbackContext context)
+    {
+        判断_可以扒墙下滑 = true;
+        JumpCancel();
+        if (玩家刚体.velocity.y > 0.0f && 判断_跳跃中)
         {
-            // JumpCancel();
+            玩家刚体.velocity = new Vector2(0.0f, 0.1f);
+            判断_跳跃中 = false;
         }
 
-        private void 跳跃_松开(InputAction.CallbackContext context)
+        // 判断_可以跳跃 = false;
+    }
+
+    private void JumpCancel()
+    {
+        玩家动画.ResetTrigger(动画参数_跳跃);
+        玩家动画.ResetTrigger(动画参数_二段跳);
+    }
+    #endregion
+
+    #region 地面和下落检测
+    private void 地面接触检测()        // 地面接触检测
+    {
+        判断_地面检测 = 碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("地面")) ||              // 检查 “碰撞体_玩家脚部” 碰撞器是否接触到 “地面” 图层蒙版上的任何碰撞器
+                   碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("MovingPlatform")) ||
+                   碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("DestructibleLayer")) ||
+                   碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("OneWayPlatform"));
+
+        //isOneWayPlatform = 碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("OneWayPlatform"));// 检查 碰撞体_玩家脚部 碰撞器是否接触到 OneWayPlatform 图层蒙版上的任何碰撞器
+
+        玩家动画.SetBool(动画参数_在地面上, 判断_地面检测);
+
+        if (判断_地面检测)
         {
-            JumpCancel();
-            if(玩家刚体.velocity.y > 0.0f)
-            {
-                玩家刚体.velocity= new Vector2(玩家刚体.velocity.x, 0.1f);
-            }
-            
-            // 判断_可以跳跃 = false;
-        }
-
-        void JumpCancel()
-        {
-            // 判断_跳跃中 = false;
-            // if (跳跃计数 ==1)
-            {
-                玩家动画.ResetTrigger(动画参数_跳跃);
-            }
-            // else if (跳跃计数 == 2)
-            {
-                玩家动画.ResetTrigger(动画参数_二段跳);
-            }
-        }
-        #endregion
-
-        void 地面接触检测()        // 地面接触检测
-        {
-            判断_地面检测 = 碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("地面")) ||              // 检查 “碰撞体_玩家脚部” 碰撞器是否接触到 “地面” 图层蒙版上的任何碰撞器
-                       碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("MovingPlatform")) ||
-                       碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("DestructibleLayer")) ||
-                       碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("OneWayPlatform"));
-
-            //isOneWayPlatform = 碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("OneWayPlatform"));// 检查 碰撞体_玩家脚部 碰撞器是否接触到 OneWayPlatform 图层蒙版上的任何碰撞器
-
-            玩家动画.SetBool(动画参数_在地面上,判断_地面检测);
-        }
-
-        void 下落检测()
-        {
-            if (玩家刚体.velocity.y < 0)
-            {
-                判断_下落检测 = true;
-            }
-            else
-            {
-                判断_下落检测 = false;
-            }
-            玩家动画.SetBool(动画参数_下落中, 判断_下落检测);
+            判断_已经二段跳 = false;
+            判断_蹬墙跳中 = false;
+            判断_可以扒墙下滑 = false;
         }
     }
+
+    private void 下落检测()
+    {
+        if (玩家刚体.velocity.y < 0)
+        {
+            判断_下落检测 = true;
+            判断_可以扒墙下滑 = true;
+        }
+        else
+        {
+            判断_下落检测 = false;
+        }
+        玩家动画.SetBool(动画参数_下落中, 判断_下落检测);
+    }
+
+    private void 扒墙状态控制()
+    {
+        if (判断_扒墙中)
+        {
+            玩家刚体.velocity = 判断_可以扒墙下滑 ? new Vector2(玩家刚体.velocity.x, 扒墙下滑速度) : new Vector2(玩家刚体.velocity.x, 0f);
+        }
+    }
+    #endregion
+
+    #region 冲刺方法
+    private void 玩家冲刺限制()
+    {
+        if (判断_地面检测)
+        {
+            冲刺限制开关 = false;
+        }
+    }
+
+    private void 冲刺_按下(InputAction.CallbackContext context)
+    {
+        if (判断_可以冲刺 && 冲刺输入开关 && !冲刺限制开关)
+        {
+            冲刺限制开关 = true;
+            StartCoroutine(冲刺协程(冲刺时间));
+        }
+    }
+
+    private IEnumerator 冲刺协程(float 冲刺过程时间)
+    {
+        冲刺输入开关 = false;
+        重力开关 = false;
+        判断_冲刺中 = true;
+        玩家刚体.velocity = 判断_玩家朝向左 ? new Vector2(-冲刺速度, 0.0f) : new Vector2(冲刺速度, 0.0f);
+        玩家动画.SetTrigger(动画参数_冲刺);
+        能力特效控制器.激活能力特效(2);
+        yield return new WaitForSeconds(冲刺过程时间);
+        玩家动画.ResetTrigger(动画参数_冲刺);
+        判断_冲刺中 = false;
+        重力开关 = true;
+        玩家刚体.velocity = new Vector2(0.0f, 0.0f);
+        yield return new WaitForSeconds(冲刺冷却时间);
+        冲刺输入开关 = true;
+    }
+    #endregion
+
+    public void 判断_开始爬墙()
+    {
+        判断_扒墙中 = true;
+        判断_已经二段跳 = false;
+        冲刺限制开关 = false;
+        玩家动画.SetBool(动画参数_扒墙中, true);
+    }
+
+    public void 判断_退出爬墙()
+    {
+        判断_贴墙中 = false;
+        玩家动画.SetBool(动画参数_扒墙中, false);
+        判断_扒墙中 = false;
+    }
 }
+
