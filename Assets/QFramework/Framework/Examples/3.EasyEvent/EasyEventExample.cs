@@ -2,7 +2,7 @@
 
 namespace QFramework.Example
 {
-    public class EasyEventExample0 : MonoBehaviour
+    public class EasyEventExample : MonoBehaviour
     {
         private EasyEvent mOnMouseLeftClickEvent = new EasyEvent();
         

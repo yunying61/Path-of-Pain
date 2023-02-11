@@ -449,21 +449,11 @@ namespace QFramework
 
     public static class CanSendCommandExtension
     {
-        /// <summary>
-        /// 发送一个命令，泛型形式
-        /// </summary>
-        /// <typeparam name="T">泛型必须是ICommand接口类型</typeparam>
-        /// <param name="self">需要发送的命令类</param>
         public static void SendCommand<T>(this ICanSendCommand self) where T : ICommand, new()
         {
             self.GetArchitecture().SendCommand<T>();
         }
-        /// <summary>
-        /// 发送一个命令，可传参
-        /// </summary>
-        /// <typeparam name="T">泛型必须是ICommand接口类型</typeparam>
-        /// <param name="self"></param>
-        /// <param name="command">需要发送的命令类</param>
+
         public static void SendCommand<T>(this ICanSendCommand self, T command) where T : ICommand
         {
             self.GetArchitecture().SendCommand<T>(command);
