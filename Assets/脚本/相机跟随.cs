@@ -24,7 +24,8 @@ public class 相机跟随 : MonoBehaviour
                 targetPos.x = Mathf.Clamp(targetPos.x, 相机范围_左下角.x, 相机范围_右上角.x);       // 将相机的x轴移动范围限制在一定范围内
                 targetPos.y = Mathf.Clamp(targetPos.y, 相机范围_左下角.y, 相机范围_右上角.y);       // 将相机的y轴移动范围限制在一定范围内
                 targetPos.z = -10f;
-                transform.position = Vector3.Lerp(transform.position, targetPos, 相机位移线性插值);        // 线性插值，用于镜头跟随玩家时的平滑移动
+                //transform.position = Vector3.Lerp(transform.position, targetPos, 相机位移线性插值);        // 线性插值，用于镜头跟随玩家时的平滑移动
+                transform.position = targetPos;
             }
         }
     }

@@ -9,7 +9,8 @@ public class 玩家C : MonoBehaviour
     #region 属性
     private PlayerInputActions 玩家输入控制器;
     private Rigidbody2D 玩家刚体;
-    private BoxCollider2D 碰撞体_玩家脚部;
+    private CapsuleCollider2D 碰撞体_玩家脚部;
+
     private Animator 玩家动画;
     [SerializeField] private 能力特效C 能力特效控制器;
     [SerializeField] private 玩家作用特效下C 玩家作用特效下控制器;
@@ -88,8 +89,9 @@ public class 玩家C : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        //Application.targetFrameRate = 60;
         玩家刚体 = GetComponent<Rigidbody2D>();
-        碰撞体_玩家脚部 = GetComponent<BoxCollider2D>();
+        碰撞体_玩家脚部 = GetComponent<CapsuleCollider2D>();
         玩家动画 = GetComponent<Animator>();
 
         动画参数_在地面上 = Animator.StringToHash("判断_在地面上");
@@ -192,6 +194,7 @@ public class 玩家C : MonoBehaviour
             {
                 玩家刚体.velocity = new Vector2(玩家刚体.velocity.x, 跳跃力度);
                 //玩家刚体.AddForce(new Vector2(0, 跳跃力度), ForceMode2D.Impulse);
+                玩家动画.SetBool(动画参数_在地面上, 判断_地面检测);
                 玩家动画.SetTrigger(动画参数_跳跃);
                 判断_跳跃中 = true;
             }
@@ -252,7 +255,7 @@ public class 玩家C : MonoBehaviour
     #region 地面和下落检测
     private void 地面接触检测()        // 地面接触检测
     {
-        判断_地面检测 = 碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("地面")) ||              // 检查 “碰撞体_玩家脚部” 碰撞器是否接触到 “地面” 图层蒙版上的任何碰撞器
+        判断_地面检测 = 碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("可站立图层_地面")) ||              // 检查 “碰撞体_玩家脚部” 碰撞器是否接触到 “地面” 图层蒙版上的任何碰撞器
                    碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("MovingPlatform")) ||
                    碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("DestructibleLayer")) ||
                    碰撞体_玩家脚部.IsTouchingLayers(LayerMask.GetMask("OneWayPlatform"));
