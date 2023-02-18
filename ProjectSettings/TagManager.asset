@@ -39,6 +39,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: "\u7269\u4EF6"
+    uniqueID: 269386031
+    locked: 0
+  - name: "\u5730\u9762\u5899\u58C1\u5929\u82B1\u677F"
+    uniqueID: 3622093543
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
@@ -50,4 +56,13 @@ TagManager:
     locked: 0
   - name: "\u73A9\u5BB6\u4F5C\u7528\u7279\u6548_\u4E0B\u5C42"
     uniqueID: 3622264797
+    locked: 0
+  - name: "\u767D\u8272\u80CC\u666F\u906E\u7F69\u5C42"
+    uniqueID: 3208881365
+    locked: 0
+  - name: "\u80CC\u666F\u7269\u4F53\u5C42"
+    uniqueID: 3018786499
+    locked: 0
+  - name: "\u9ED1\u8272\u80CC\u666F\u5C42"
+    uniqueID: 2136774003
     locked: 0

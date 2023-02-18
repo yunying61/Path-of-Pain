@@ -146,7 +146,7 @@ TextureImporter:
         width: 67
         height: 149
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -154,6 +154,48 @@ TextureImporter:
       bones: []
       spriteID: 2484f3376b0c25e40a3901a27f3acece
       internalID: 1784388955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpriteAtlasTexture-White_Extra-1024x512-fmt12_2
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 1
+        width: 126
+        height: 68
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1dcf4aeaaae933e48babef22596203f4
+      internalID: -1142749246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpriteAtlasTexture-White_Extra-1024x512-fmt12_3
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 212
+        width: 371
+        height: 297
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee3c1b0a69822dc43a79266a187e372a
+      internalID: -660781882
       vertices: []
       indices: 
       edges: []
@@ -169,7 +211,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
+      SpriteAtlasTexture-White_Extra-1024x512-fmt12_3: -660781882
       SpriteAtlasTexture-White_Extra-1024x512-fmt12_0: 1978964055
+      SpriteAtlasTexture-White_Extra-1024x512-fmt12_2: -1142749246
       SpriteAtlasTexture-White_Extra-1024x512-fmt12_1: 1784388955
   spritePackingTag: 
   pSDRemoveMatte: 0
