@@ -66,3 +66,6 @@ TagManager:
   - name: "\u9ED1\u8272\u80CC\u666F\u5C42"
     uniqueID: 2136774003
     locked: 0
+  - name: "\u9ED1\u8272\u7269\u4F53\u5C42"
+    uniqueID: 3775369035
+    locked: 0
