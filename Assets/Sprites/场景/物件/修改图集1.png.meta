@@ -242,27 +242,6 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: "\u4FEE\u6539\u56FE\u96C61_6"
-      rect:
-        serializedVersion: 2
-        x: 946
-        y: 1863
-        width: 205
-        height: 193
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0e2af33333ff79f4c82a783a2e3b4400
-      internalID: 448967067
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     physicsShape: []
     bones: []
