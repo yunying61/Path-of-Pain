@@ -403,6 +403,64 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: SpriteAtlasTexture-White_Palace (Group 0)-4096x4096-fmt12_10
+      rect:
+        serializedVersion: 2
+        x: 3021
+        y: 610
+        width: 164
+        height: 503
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 82, y: -68.5}
+        - {x: 73, y: -63.5}
+        - {x: 73, y: 13.5}
+        - {x: 82, y: 18.5}
+        - {x: 82, y: 251.5}
+        - {x: -82, y: 251.5}
+        - {x: -82, y: -202.5}
+        - {x: -58, y: -251.5}
+        - {x: 59, y: -251.5}
+        - {x: 82, y: -201.5}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0985d840e352eb04ebce95e52416c387
+      internalID: 2018744138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpriteAtlasTexture-White_Palace (Group 0)-4096x4096-fmt12_11
+      rect:
+        serializedVersion: 2
+        x: 3634
+        y: 371
+        width: 164
+        height: 503
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -82, y: 251.5}
+        - {x: -82, y: -203.5}
+        - {x: -58, y: -251.5}
+        - {x: 60, y: -251.5}
+        - {x: 82, y: -199.5}
+        - {x: 82, y: 251.5}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5602aaebd94b7a64ba84f031c4f10f5f
+      internalID: -1014614857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -422,7 +480,9 @@ TextureImporter:
       SpriteAtlasTexture-White_Palace (Group 0)-4096x4096-fmt12_2: 2063453563
       SpriteAtlasTexture-White_Palace (Group 0)-4096x4096-fmt12_6: -647826920
       SpriteAtlasTexture-White_Palace (Group 0)-4096x4096-fmt12_5: 253468956
+      SpriteAtlasTexture-White_Palace (Group 0)-4096x4096-fmt12_10: 2018744138
       SpriteAtlasTexture-White_Palace (Group 0)-4096x4096-fmt12_4: 571992351
+      SpriteAtlasTexture-White_Palace (Group 0)-4096x4096-fmt12_11: -1014614857
       SpriteAtlasTexture-White_Palace (Group 0)-4096x4096-fmt12_9: -636728318
   spritePackingTag: 
   pSDRemoveMatte: 0
